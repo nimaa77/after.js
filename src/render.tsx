@@ -11,7 +11,6 @@ import { Request, Response } from 'express';
 import { Assets, AsyncRouteProps, manifest } from './types';
 import { StaticRouterContext } from "react-router"
 import { getAssests } from "./getAssests";
-import { transformRoutes } from "./transformRoutes";
 
 /*
  The customRenderer parameter is a (potentially async) function that can be set to return 
@@ -32,10 +31,8 @@ export interface AfterRenderOptions<T> {
 }
 
 export async function render<T>(options: AfterRenderOptions<T>) {
-  const { req, res, routes: pureRoutes, assets, document: Document, customRenderer, manifest, App = React.Fragment, ...rest } = options;
+  const { req, res, routes, assets, document: Document, customRenderer, manifest, App = React.Fragment, ...rest } = options;
 	const Doc = Document || DefaultDoc;
-
-	const routes = transformRoutes(pureRoutes)
 
   const context: StaticRouterContext = {};
   const renderPage = async () => {

@@ -4,7 +4,6 @@ import { loadInitialProps } from './loadInitialProps';
 import { History, Location } from 'history';
 import { AsyncRouteProps } from './types';
 import { get404Component, getAllRoutes, isDOM } from "./utils";
-import { transformRoutes } from './transformRoutes';
 
 export interface AfterpartyProps extends RouteComponentProps<any> {
   history: History;
@@ -36,11 +35,8 @@ class Afterparty extends React.Component<AfterpartyProps, AfterpartyState> {
       data: SERVER_APP_STATE,
       previousLocation: null
     };
-
-		this.prefetcherCache = {};
-		this.NotfoundComponent = get404Component(this.props.routes)
 		
-		this.routes = isDOM ? transformRoutes(props.routes) : props.routes
+		this.routes = props.routes
 		this.prefetcherCache = {};
 		this.NotfoundComponent = get404Component(this.routes)
   }
