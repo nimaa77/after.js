@@ -13,10 +13,6 @@ import { StaticRouterContext } from "react-router"
 import { getAssests } from "./getAssests";
 import { transformRoutes } from "./transformRoutes";
 
-const modPageFn = function<Props>(Page: React.ComponentType<Props>) {
-  return (props: Props) => <Page {...props} />;
-};
-
 /*
  The customRenderer parameter is a (potentially async) function that can be set to return 
  more than just a rendered string.
