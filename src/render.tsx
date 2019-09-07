@@ -8,8 +8,14 @@ import { loadInitialProps } from './loadInitialProps';
 import * as utils from './utils';
 import * as url from 'url';
 import { Request, Response } from 'express';
-import { Assets, AsyncRouteProps } from './types';
+import { Assets, AsyncRouteProps, manifest } from './types';
 import { StaticRouterContext } from "react-router"
+import { getAssests } from "./getAssests";
+import { transformRoutes } from "./transformRoutes";
+
+const modPageFn = function<Props>(Page: React.ComponentType<Props>) {
+  return (props: Props) => <Page {...props} />;
+};
 
 /*
  The customRenderer parameter is a (potentially async) function that can be set to return 
@@ -24,13 +30,16 @@ export interface AfterRenderOptions<T> {
 	assets: Assets;
 	App: React.ComponentType;
   routes: AsyncRouteProps[];
-  document?: typeof DefaultDoc;
+	document?: typeof DefaultDoc;
+	manifest: manifest;
   customRenderer?: (element: JSX.Element) => { html: string };
 }
 
 export async function render<T>(options: AfterRenderOptions<T>) {
-  const { req, res, routes, assets, document: Document, customRenderer, App = React.Fragment, ...rest } = options;
-  const Doc = Document || DefaultDoc;
+  const { req, res, routes: pureRoutes, assets, document: Document, customRenderer, manifest, App = React.Fragment, ...rest } = options;
+	const Doc = Document || DefaultDoc;
+
+	const routes = transformRoutes(pureRoutes)
 
   const context: StaticRouterContext = {};
   const renderPage = async () => {
@@ -86,8 +95,14 @@ export async function render<T>(options: AfterRenderOptions<T>) {
     return;
   }
 
-  const reactRouterMatch = matchPath(req.url, match as RouteProps);
+	const reactRouterMatch = matchPath(req.url, match as RouteProps);
 
+	const prefix =
+	process.env.NODE_ENV === "production"
+		? "/"
+		: `http://${process.env.HOST!}:${parseInt(process.env.PORT!, 10) + 1}/`
+	
+	const { scripts, styles } = getAssests({ match: reactRouterMatch, routes, manifest })
   const { html, ...docProps } = await Doc.getInitialProps({
     req,
     res,
@@ -95,7 +110,10 @@ export async function render<T>(options: AfterRenderOptions<T>) {
     renderPage,
     data,
     helmet: Helmet.renderStatic(),
-    match: reactRouterMatch,
+		match: reactRouterMatch,
+		scripts,
+		styles,
+		prefix,
     ...rest
   });
 

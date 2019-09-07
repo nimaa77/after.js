@@ -11,6 +11,14 @@ export const isObject = (obj: any) => obj !== null && typeof obj === 'object';
 export const isPromise = (value: any): boolean =>
   isObject(value) && isFunction(value.then);
 
+/** @private we render on client? */
+export const isDOM = (): boolean =>
+	typeof window === "object" && typeof window.document === "object";
+
+/** @private we render on server? */
+export const isServer = (): boolean =>
+	!isDOM()
+
 /** @private Guard cluase to narrow the AsyncRouteableComponent union type on getInitialProps */
 export function isAsyncComponent(Component: AsyncRouteableComponent): Component is AsyncRouteComponentType<any> {
   return (<AsyncRouteComponentType<any>>Component).getInitialProps !== undefined;
@@ -34,5 +42,5 @@ export function get404Component(routes: AsyncRouteProps<any>[]): AsyncRouteableC
 
 /** @private Checks if 404Component is in routes, if it's not available add default 404 component */
 export function getAllRoutes(routes: AsyncRouteProps<any>[]): AsyncRouteProps<any>[] {
-  return is404ComponentAvailable(routes) ? routes : [...routes, { component: NotFoundComponent }]
+  return is404ComponentAvailable(routes) ? routes : [...routes, { name: "NotFoundComponent", component: NotFoundComponent }]
 }

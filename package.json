@@ -12,8 +12,8 @@
     "build",
     "after.js",
     "document.js",
+    "transformRoutes.js",
     "asyncComponent.js",
-    "ensureReady.js",
     "render.js",
     "loadInitialProps.js"
   ],
