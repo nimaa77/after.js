@@ -10,7 +10,7 @@ import * as url from 'url';
 import { Request, Response } from 'express';
 import { Assets, AsyncRouteProps, manifest } from './types';
 import { StaticRouterContext } from "react-router"
-import { getAssests } from "./getAssests";
+import { getAssets } from "./getAssets";
 
 /*
  The customRenderer parameter is a (potentially async) function that can be set to return 
@@ -31,8 +31,10 @@ export interface AfterRenderOptions<T> {
 }
 
 export async function render<T>(options: AfterRenderOptions<T>) {
-  const { req, res, routes, assets, document: Document, customRenderer, manifest, App = React.Fragment, ...rest } = options;
+  const { req, res, routes: pureRoutes, assets, document: Document, customRenderer, manifest, App = React.Fragment, ...rest } = options;
 	const Doc = Document || DefaultDoc;
+
+	const routes = utils.getAllRoutes(pureRoutes);
 
   const context: StaticRouterContext = {};
   const renderPage = async () => {
@@ -42,7 +44,7 @@ export async function render<T>(options: AfterRenderOptions<T>) {
     const asyncOrSyncRender = renderer(
       <StaticRouter location={req.url} context={context}>
 				<App>
-					<After data={data} routes={utils.getAllRoutes(routes)} />
+					<After data={data} routes={routes} />
 				</App>
       </StaticRouter>
     );
@@ -95,7 +97,7 @@ export async function render<T>(options: AfterRenderOptions<T>) {
 		? "/"
 		: `http://${process.env.HOST!}:${parseInt(process.env.PORT!, 10) + 1}/`
 	
-	const { scripts, styles } = getAssests({ match: reactRouterMatch, routes, manifest })
+	const { scripts, styles } = getAssets({ route: match, manifest })
   const { html, ...docProps } = await Doc.getInitialProps({
     req,
     res,
@@ -103,10 +105,10 @@ export async function render<T>(options: AfterRenderOptions<T>) {
     renderPage,
     data,
     helmet: Helmet.renderStatic(),
-		match: reactRouterMatch,
-		scripts,
-		styles,
-		prefix,
+	match: reactRouterMatch,
+	scripts,
+	styles,
+	prefix,
     ...rest
   });
 

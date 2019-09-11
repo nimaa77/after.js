@@ -1,12 +1,16 @@
 import { matchPath } from 'react-router-dom';
 import { AsyncRouteProps, InitialProps, CtxBase } from './types';
 import { isAsyncComponent } from './utils';
+import { RouteProps } from 'react-router-dom';
 
 export async function loadInitialProps(routes: AsyncRouteProps[], pathname: string, ctx: CtxBase): Promise<InitialProps> {
   const promises: Promise<any>[] = [];
 
-  const matchedComponent = routes.find((route: AsyncRouteProps) => {
-    const match = matchPath(pathname, route);
+  const matchedComponent = routes.find((route: RouteProps) => {
+
+		// matchPath dont't accept undifined path property
+		// in <Switch> componet Child <Route> default path value is an empty string
+    const match = matchPath(pathname, {...route, path: route.path || ""});
 
     if (match && route.component && isAsyncComponent(route.component)) {
       const component = route.component;
