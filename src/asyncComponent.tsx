@@ -8,10 +8,12 @@ import { Module, AsyncRouteComponentState, AsyncRouteComponentType, Ctx } from '
  */
 export function asyncComponent<Props>({
   loader,
-  Placeholder
+  Placeholder,
+  chunkName,
 }: {
   loader: () => Promise<Module<React.ComponentType<Props>>>;
   Placeholder?: React.ComponentType<Props>;
+  chunkName?: string;
 }) {
   // keep Component in a closure to avoid doing this stuff more than once
   let Component: AsyncRouteComponentType<Props> | null = null;
@@ -27,6 +29,10 @@ export function asyncComponent<Props>({
         Component = ResolvedComponent!.default || ResolvedComponent;
       });
     }
+
+    static getChunkName() {
+      return chunkName;
+    } 
 
     static getInitialProps(ctx: Ctx<any>) {
       // Need to call the wrapped components getInitialProps if it exists

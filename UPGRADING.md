@@ -141,17 +141,17 @@ export default [
   {
     path: '/about',
     exact: true,
-    chunkName: 'whatever',
     component: asyncComponent({
       loader: () => import(/* webpackChunkName: "whatever" */ './About'),
+      chunkName: 'whatever',
     }),
   },
   {
     path: '/contact-us',
     exact: true,
-    chunkName: 'ContactUs',
     component: asyncComponent({
       loader: () => import(/* webpackChunkName: "ContactUs" */ './Contact'),
+      chunkName: 'ContactUs',
     }),
   },
 ];
@@ -178,7 +178,7 @@ Create a `.babelrc` file in the root of the project (next to the package.json)
 
 #### Limitations of babel plugin
 
-There is only one limitation, it won't work if your code looks like this:
+There are some limitation, for example blow code won't work with plugin:
 
 ```jsx
 import Home from './Home';
@@ -223,13 +223,13 @@ function myTransformations(route) {
   if (!route.name) return route;
   return {
     ...route,
-    chunkName: route.name,
     component: asyncComponent({
       loader: () =>
         import(
           /* webpackChunkName: "[request]" */
           `./pages/${route.name}`
         ),
+      chunkName: route.name,
     }),
   };
 }
