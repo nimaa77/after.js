@@ -1,7 +1,12 @@
-node_modules
-.DS_Store
-*.log
-package-lock.json
-build
 .vscode
 *.map
+*.log
+.DS_Store
+node_modules
+.cache
+.rts2_cache_cjs
+.rts2_cache_esm
+.rts2_cache_umd
+dist
+package-lock.json
+build
