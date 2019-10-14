@@ -6,7 +6,7 @@
     "declaration": true,
     "jsx": "react",
     "target": "es5",
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node"
   },
   "exclude": [
