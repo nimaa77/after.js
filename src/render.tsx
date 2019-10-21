@@ -26,17 +26,17 @@ export interface AfterRenderOptions<T> {
 	App: React.ComponentType;
   routes: AsyncRouteProps[];
 	document?: typeof DefaultDoc;
-	manifest: manifest;
+  manifest: manifest;
+  context?: StaticRouterContext
   customRenderer?: (element: JSX.Element) => { html: string };
 }
 
 export async function render<T>(options: AfterRenderOptions<T>) {
-  const { req, res, routes: pureRoutes, assets, document: Document, customRenderer, manifest, App = React.Fragment, ...rest } = options;
+  const { req, res, routes: pureRoutes, assets, document: Document, customRenderer, manifest, context = {}, App = React.Fragment, ...rest } = options;
 	const Doc = Document || DefaultDoc;
 
 	const routes = utils.getAllRoutes(pureRoutes);
 
-  const context: StaticRouterContext = {};
   const renderPage = async () => {
     // By default, we keep ReactDOMServer synchronous renderToString function
     const defaultRenderer = (element: JSX.Element) => ({ html: ReactDOMServer.renderToString(element) });
