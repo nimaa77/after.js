@@ -94,7 +94,16 @@ class Afterparty extends React.Component<AfterpartyProps, AfterpartyState> {
             (prevState.previousLocation &&
               prevState.previousLocation.pathname) !== location.pathname
           ) {
-            window.scrollTo(0, 0);
+            try {
+              // since it work in Chrome 52 and upper and there is no backward compatibilities
+              window.scroll({
+                top: 0,
+                left: 0,
+                behavior: "smooth",
+              })
+            } catch (e) {
+              window.scroll(0, 0)
+            }
           }
           this.setState({ previousLocation: null, data });
         })
