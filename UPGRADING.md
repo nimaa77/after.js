@@ -303,7 +303,7 @@ import express from 'express';
 import { render } from '@jaredpalmer/after';
 import routes from './routes';
 import MyDocument from './Document';
-import manifest from '../build/manifest.json'; // <-- import manifest
+import manifest from '../build/manifest.json'; // ⬅️ import manifest
 
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
 
@@ -318,7 +318,7 @@ server
         req,
         res,
         document: MyDocument,
-        manifest, // <-- pass it to render method
+        manifest, // ⬅️ pass it to render method
         routes,
         assets,
       });
@@ -345,20 +345,13 @@ import React from 'react';
 import { AfterRoot, AfterData } from '@jaredpalmer/after';
 
 class Document extends React.Component {
-  static async getInitialProps({
-    assets,
-    data,
-    renderPage,
-    scripts,
-    styles,
-    prefix,
-  }) {
+  static async getInitialProps({ assets, data, renderPage }) {
     const page = await renderPage();
-    return { assets, data, scripts, styles, prefix, ...page };
+    return { assets, data, ...page };
   }
 
   render() {
-    const { helmet, assets, data, scripts, styles, prefix } = this.props;
+    const { helmet, assets, data } = this.props;
     // get attributes from React Helmet
     const htmlAttrs = helmet.htmlAttributes.toComponent();
     const bodyAttrs = helmet.bodyAttributes.toComponent();
@@ -373,9 +366,6 @@ class Document extends React.Component {
           {helmet.title.toComponent()}
           {helmet.meta.toComponent()}
           {helmet.link.toComponent()}
-          {styles.map(path => (
-            <link key={path} rel="stylesheet" href={path} />
-          ))}
           {assets.client.css && (
             <link rel="stylesheet" href={assets.client.css} />
           )}
@@ -383,15 +373,6 @@ class Document extends React.Component {
         <body {...bodyAttrs}>
           <AfterRoot />
           <AfterData data={data} />
-          {scripts.map(path => (
-            <script
-              key={path}
-              defer
-              type="text/javascript"
-              src={prefix + path}
-              crossOrigin="anonymous"
-            />
-          ))}
           <script
             type="text/javascript"
             src={assets.client.js}
@@ -424,13 +405,13 @@ class Document extends React.Component {
     styles,
     prefix,
   }) {
-    // <- scripts, styles, prefix
+    // ⬅️ get scripts, styles, prefix
     const page = await renderPage();
-    return { assets, data, scripts, styles, prefix, ...page }; // <- scripts, styles, prefix
+    return { assets, data, scripts, styles, prefix, ...page }; // ⬅️ return scripts, styles, prefix
   }
 
   render() {
-    const { helmet, assets, data, scripts, styles, prefix } = this.props; // <- scripts, styles, prefix
+    const { helmet, assets, data, scripts, styles, prefix } = this.props; // ⬅️ get scripts, styles, prefix from props
     // get attributes from React Helmet
     const htmlAttrs = helmet.htmlAttributes.toComponent();
     const bodyAttrs = helmet.bodyAttributes.toComponent();
@@ -445,21 +426,19 @@ class Document extends React.Component {
           {helmet.title.toComponent()}
           {helmet.meta.toComponent()}
           {helmet.link.toComponent()}
-          {styles.map((
-            path // <- loop through styles
-          ) => (
-            <link key={path} rel="stylesheet" href={path} />
-          ))}
           {assets.client.css && (
             <link rel="stylesheet" href={assets.client.css} />
           )}
+          {/* ⬇️ loop through styles ⬇️ */}
+          {styles.map(path => (
+            <link key={path} rel="stylesheet" href={path} />
+          ))}
         </head>
         <body {...bodyAttrs}>
           <AfterRoot />
           <AfterData data={data} />
-          {scripts.map((
-            path // <- loop through scripts
-          ) => (
+          {/* ⬇️ loop through scripts ⬇️ */}
+          {scripts.map(path => (
             <script
               key={path}
               defer
@@ -468,8 +447,8 @@ class Document extends React.Component {
               crossOrigin="anonymous"
             />
           ))}
-          <script // NOTE: order should not change
-            type="text/javascript" // first load chunks (scripts) then main.client.js
+          <script // ⚠️ NOTE: order should not change
+            type="text/javascript" // first load chunks (scripts) then client.js
             src={assets.client.js}
             defer
             crossOrigin="anonymous"
