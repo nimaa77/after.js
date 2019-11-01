@@ -61,9 +61,8 @@ class Afterparty extends React.Component<AfterpartyProps, AfterpartyState> {
     const navigated = currentLocation !== previousLocation;
     if (navigated) {
       return {
-        previousLocation,
+        previousLocation: state.previousLocation || previousLocation,
         currentLocation,
-        data: undefined,
       };
     }
 
@@ -89,6 +88,9 @@ class Afterparty extends React.Component<AfterpartyProps, AfterpartyState> {
         ...rest,
       })
         .then(({ data }) => {
+          if(this.state.currentLocation !== location)
+            return 
+            
           // Only for page changes, prevent scroll up for anchor links
           if (
             (prevState.previousLocation &&
@@ -133,7 +135,7 @@ class Afterparty extends React.Component<AfterpartyProps, AfterpartyState> {
     const initialData = this.prefetcherCache[location.pathname] || data;
 
     return (
-      <Switch>
+      <Switch location={previousLocation || location}>
         {initialData &&
           initialData.statusCode &&
           initialData.statusCode === 404 && (
@@ -150,7 +152,6 @@ class Afterparty extends React.Component<AfterpartyProps, AfterpartyState> {
             key={`route--${i}`}
             path={r.path}
             exact={r.exact}
-            location={previousLocation || location}
             render={props =>
               React.createElement(r.component, {
                 ...initialData,
