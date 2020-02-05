@@ -131,7 +131,7 @@ class Afterparty extends React.Component<AfterpartyProps, AfterpartyState> {
 
   render() {
     const { previousLocation, data } = this.state;
-    const { location: currentLocation, history, match } = this.props;
+    const { location: currentLocation } = this.props;
     const initialData = this.prefetcherCache[currentLocation.pathname] || data;
 
     const location = previousLocation || currentLocation;
@@ -158,9 +158,9 @@ class Afterparty extends React.Component<AfterpartyProps, AfterpartyState> {
               React.createElement(r.component, {
                 ...initialData,
                 prefetch: this.prefetch,
-                history,
+                history: props.history,
+                match: props.match,
                 location,
-                match,
               })
             }
           />
